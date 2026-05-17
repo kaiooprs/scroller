@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scroller - O Jogo da Governança de TI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Urbanist:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <img src="assets/front-scroller.png" class="scroller-background left-scroller" alt="Decoração Esquerda">
+    <img src="assets/critical-scroller.png" class="scroller-background right-scroller" alt="Decoração Direita">
+
+    <main class="game-container">
+        
+        <div id="phone-screen">
+            
+            <header id="status-header" class="hidden">
+                <div class="bar-container">
+                    <span>DIRETORIA</span>
+                    <div class="progress-bar"><div id="bar-diretoria" class="fill fill-dir"></div></div>
+                </div>
+                <div class="bar-container">
+                    <span>CRIADORES</span>
+                    <div class="progress-bar"><div id="bar-criadores" class="fill fill-cri"></div></div>
+                </div>
+                <div class="bar-container">
+                    <span>INFRA</span>
+                    <div class="progress-bar"><div id="bar-infra" class="fill fill-inf"></div></div>
+                </div>
+            </header>
+
+            <div id="game-content">
+                </div>
+
+        </div>
+
+    </main>
+
+    <audio id="bg-music"></audio>
+
+    <script src="db.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

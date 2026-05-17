@@ -1,0 +1,239 @@
+/* RESET BÁSICO */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #0d1117;
+    font-family: 'Inter', sans-serif;
+    color: #f0f6fc;
+    overflow: hidden; /* Trava o scroll do navegador */
+    position: relative;
+    margin: 0;
+    height: 100vh;
+    width: 100vw;
+}
+
+.scroller-background {
+    position: absolute;
+    bottom: 25vh; /* Perto do chão */
+    height: 45vh; /* Bem grande pra dar impacto visual */
+    z-index: 1; /* Fica atrás do celular */
+    pointer-events: none; /* User não consegue clicar neles */
+    
+    /* Mágica da Imersão: Escala de cinza e 12% de opacidade */
+    filter: grayscale(100%) opacity(0.12); 
+    transition: opacity 0.5s; /* Transição suave se quiser ocultar em telas específicas */
+}
+
+.left-scroller {
+    left: 10vw; /* Cola na borda esquerda */
+}
+
+.right-scroller {
+    right: 10vw; /* Cola na borda direita */
+}
+
+/* CENTRALIZAÇÃO DO CELULAR */
+.game-container {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* O CELULAR */
+#phone-screen {
+    width: 360px;
+    height: 640px;
+    background-color: #161b22;
+    border: 8px solid #30363d;
+    border-radius: 40px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    position: relative;
+    z-index: 10;
+}
+
+/* HEADER COM AS BARRAS */
+#status-header {
+    display: flex;
+    justify-content: space-around;
+    padding: 20px 10px;
+    background: #0d1117;
+    border-bottom: 1px solid #30363d;
+    z-index: 10; /* Fica sempre por cima */
+}
+
+#status-header.hidden {
+    display: none; /* Fica oculto no Menu Principal */
+}
+
+.bar-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+.progress-bar {
+    width: 80px;
+    height: 8px;
+    background: #30363d;
+    border-radius: 4px;
+    margin-top: 5px;
+    overflow: hidden;
+}
+
+.fill {
+    height: 100%;
+    width: 50%; /* Padrão inicial */
+    border-radius: 4px;
+    transition: width 0.5s ease-in-out, background-color 0.3s;
+}
+
+/* Cores Iniciais das Barras */
+.fill-dir { background-color: #58a6ff; }
+.fill-cri { background-color: #f778ba; }
+.fill-inf { background-color: #39d353; }
+
+/* ÁREA DO JOGO (Onde rola o scroll) */
+#game-content {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    
+    /* Esconde a barra de scroll feia */
+    scrollbar-width: none; 
+}
+#game-content::-webkit-scrollbar { display: none; }
+
+
+/* BOTÕES DO JOGO E MENU */
+.game-btn {
+    display: block;
+    width: 100%;
+    background: transparent;
+    border: 1px solid #58a6ff;
+    color: #f0f6fc;
+    padding: 15px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.game-btn:hover {
+    background: #58a6ff;
+    color: #0d1117;
+}
+
+.menu-title {
+    color: #58a6ff;
+    font-family: 'Urbanist', sans-serif;
+    font-size: 36px;
+    text-align: center;
+    margin: 20px 0 5px 0;
+}
+
+.menu-subtitle {
+    color: #8b949e;
+    text-align: center;
+    font-size: 14px;
+    margin-bottom: 40px;
+}
+
+.card-text {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.card-text h3 {
+    margin: 15px 0 10px 0;
+    font-family: 'Urbanist', sans-serif;
+}
+
+/* ANIMAÇÕES DE SCROLL TIKTOK */
+.scroll-out-up {
+    animation: slideOutUp 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+.scroll-in-bottom {
+    animation: slideInBottom 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+@keyframes slideOutUp {
+    0% { transform: translateY(0); opacity: 1; }
+    100% { transform: translateY(-100%); opacity: 0; }
+}
+
+@keyframes slideInBottom {
+    0% { transform: translateY(100%); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+}
+
+/* O wrapper que vai receber a animação */
+#card-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#game-content .game-over-img {
+    width: 250px; /* Aumenta o tamanho consideravelmente */
+    border-radius: 20px; /* Arredonda os cantos para suavizar */
+    margin-bottom: 20px; /* Dá um espaçamento */
+    box-shadow: 0 10px 35px rgba(98, 1, 1, 0.5); /* Opcional: Adiciona uma sombra para dar profundidade */
+}
+
+/* SISTEMA DE CONQUISTAS */
+.achievement {
+    display: flex;
+    align-items: center;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 12px;
+    width: 100%;
+    transition: all 0.3s;
+}
+
+.achievement.locked {
+    opacity: 0.5;
+    filter: grayscale(100%);
+    border-color: #21262d;
+}
+
+.achievement.unlocked {
+    border-color: #f778ba;
+    background: rgba(247, 120, 186, 0.05);
+}
+
+.ach-icon {
+    font-size: 28px;
+    margin-right: 15px;
+}
+
+.ach-text {
+    text-align: left;
+    color: #c9d1d9;
+    line-height: 1.4;
+}
+
+.ach-text strong {
+    color: #f0f6fc;
+    font-size: 14px;
+}
