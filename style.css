@@ -255,23 +255,16 @@ body {
     font-size: 14px;
 }
 
-/* Quando a tela for menor que 480px (Celulares Reais) */
+/* Quando a tela for menor que 480px (Celulares) */
 @media (max-width: 480px) {
     body {
-        padding: 0; /* Remove padding extra do body */
+        padding: 15px; /* Cria uma margem de segurança ao redor do celular */
     }
 
     .game-container { 
-        height: 100dvh; /* A MÁGICA PRO MOBILE: usa a altura dinâmica e real da tela */
-    }
-
-    /* Tira a borda dura do 'celular fake' e faz ele assumir a tela toda */
-    #phone-screen {
         width: 100%;
-        height: 96dvh; /* Ocupa 96% da tela, deixando 2% de sobra em cima e 2% embaixo */
-        max-height: none; 
-        border: none; /* Tira a borda cinza grossa */
-        border-radius: 15px; /* Deixa o canto levemente arredondado, igual os apps nativos */
-        box-shadow: none;
+        height: 100%;
+        max-height: calc(100vh - 30px); /* Desconta o padding para caber perfeito */
+        margin: 0; 
     }
 }
