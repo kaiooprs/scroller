@@ -268,3 +268,13 @@ body {
         margin: 0; 
     }
 }
+
+/* FADE SUAVE PARA O OVERLAY */
+.fade-in {
+    animation: fadeIn 0.3s ease-out forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}

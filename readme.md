@@ -3,6 +3,7 @@
 Este projeto foi desenvolvido **estritamente para fins educacionais e acadêmicos**, sem nenhum fim lucrativo ou intenção de comercialização. 
 
 ## ⚠️ Aviso Legal e Direitos Autorais
+Este jogo foi desenvolvimento com o Auxílio de IA, os comentários criados pela IA estão junto do código fonte.
 Os recursos de áudio utilizados nesta simulação pertencem aos seus respectivos criadores:
 * **Trilha Sonora:** Undertale (composta por Toby Fox).
 

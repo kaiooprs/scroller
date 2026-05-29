@@ -5,7 +5,9 @@ let state = {
     diretoria: 50,
     criadores: 50,
     infra: 50,
-    diaAtual: 1
+    diaAtual: 1,
+    resgateUsado: false,
+    bossLutado: false
 };
 
 // Sistema de Conquistas (Lê o LocalStorage ou cria vazio)
@@ -15,13 +17,17 @@ let unlockedEndings = JSON.parse(localStorage.getItem('scroller_achievements')) 
 const gameContent = document.getElementById('game-content');
 const statusHeader = document.getElementById('status-header');
 const bgMusic = document.getElementById('bg-music');
+const sfxPlayer = document.getElementById('sfx-player')
 
 const trilhas = {
     menu: 'assets/ost/startmenu.mp3',
     gameplay: 'assets/ost/gamethrough.mp3',
     gameover: 'assets/ost/gameover.mp3',
     ending: 'assets/ost/ending.mp3',
-    trueEnding: 'assets/ost/trueEnding.mp3'
+    trueEnding: 'assets/ost/trueEnding.mp3',
+    recusouMorte: 'assets/ost/recusouMorte.mp3',
+    infra: 'assets/ost/infra.mp3',
+    diretoria: 'assets/ost/diretoria.mp3'
 };
 
 // Função que troca a música
@@ -32,6 +38,12 @@ function tocarMusica(nomeDaFaixa, repetir = true) {
     bgMusic.loop = repetir; 
     bgMusic.volume = 0.3;
     bgMusic.play().catch(erro => console.log("Áudio bloqueado até o primeiro clique do jogador."));
+}
+
+function tocarSfx(caminhoDoArquivo) {
+    sfxPlayer.src = caminhoDoArquivo;
+    sfxPlayer.volume = 0.5; // Um pouco mais alto que a música pra dar destaque
+    sfxPlayer.play().catch(e => console.log("SFX bloqueado"));
 }
 
 // 3. Renderiza o Menu Inicial
@@ -67,7 +79,6 @@ function renderAchievements() {
     statusHeader.classList.add('hidden');
     tocarMusica('menu'); 
 
-    // Catálogo de troféus atualizado para bater com os 6 finais reais do jogo
     const finais = [
         { id: 'tela_azul', nome: 'Tela Azul da Morte', desc: 'Colapso tecnológico antes do 7º dia.', icone: '💀' },
         { id: 'fantoche', nome: 'Fantoche Corporativo', desc: 'Foco apenas em lucro e diretoria.', icone: '👔' },
@@ -197,7 +208,8 @@ function startGame() {
     }
 
     setTimeout(() => {
-        state = { diretoria: 50, criadores: 50, infra: 50, diaAtual: 1 };
+        // RESET TOTAL PARA NOVA RODADA!
+        state = { diretoria: 50, criadores: 50, infra: 50, diaAtual: 1, resgateUsado: false, bossLutado: false };
         statusHeader.classList.remove('hidden'); 
         updateBars(); 
         renderDay(state.diaAtual); 
@@ -205,14 +217,11 @@ function startGame() {
 }
 
 // 5. Atualiza o CSS das Barrinhas
-// 5. Atualiza o CSS das Barrinhas
 function updateBars() {
-    // Atualiza o tamanho visual (largura)
     document.getElementById('bar-diretoria').style.width = `${state.diretoria}%`;
     document.getElementById('bar-criadores').style.width = `${state.criadores}%`;
     document.getElementById('bar-infra').style.width = `${state.infra}%`;
 
-    // Atualiza o número de texto no meio da barra
     document.getElementById('text-diretoria').innerText = `${state.diretoria}%`;
     document.getElementById('text-criadores').innerText = `${state.criadores}%`;
     document.getElementById('text-infra').innerText = `${state.infra}%`;
@@ -226,7 +235,7 @@ function renderDay(diaIndex) {
     
     let botoesHTML = '';
     opcoesEmbaralhadas.forEach(opcao => {
-        botoesHTML += `<button class="game-btn" onclick="makeDecision(${opcao.impacto.diretoria}, ${opcao.impacto.criadores}, ${opcao.impacto.infra}, ${opcao.proximoDia})">${opcao.texto}</button>`;
+        botoesHTML += `<button class="game-btn" onclick="makeDecision(${opcao.impacto.diretoria}, ${opcao.impacto.criadores}, ${opcao.impacto.infra}, ${opcao.proximoDia}, '${opcao.minigame || ''}')">${opcao.texto}</button>`;
     });
 
     gameContent.innerHTML = `
@@ -253,7 +262,14 @@ function resetAchievements() {
 }
 
 // 7. Processa a Escolha do Jogador
-function makeDecision(impactoDir, impactoCri, impactoInf, proximoDia) {
+function makeDecision(impactoDir, impactoCri, impactoInf, proximoDia, minigameFlag) {
+
+    // A CORREÇÃO DE OURO: Usamos 'minigameFlag' em vez de 'opcao.minigame'
+    if (minigameFlag === 'throttling') {
+        iniciarMinigameThrottling(impactoCri, proximoDia);
+        return; 
+    }
+
     const cardAtual = document.getElementById('card-wrapper');
     if (cardAtual) {
         cardAtual.classList.remove('scroll-in-bottom');
@@ -271,18 +287,31 @@ function makeDecision(impactoDir, impactoCri, impactoInf, proximoDia) {
 
         updateBars();
 
+        // Resgate Financeiro (Com trava ativada!)
+        if (state.diretoria < 20 && state.criadores >= 20 && state.infra >= 20 && !state.resgateUsado) {
+            state.resgateUsado = true;
+            iniciarMinigameResgate(proximoDia);
+            return; 
+        }
+
+        // Game Over Normal
         if (state.diretoria < 20 || state.criadores < 20 || state.infra < 20) {
             renderGameOver();
             return;
         }
 
-        state.diaAtual = proximoDia;
-        
-        if(state.diaAtual > gameEvents.length) {
+        // Finais ou Boss
+        if (proximoDia > 7) {
+            if (state.diretoria >= 90 && state.criadores >= 90 && state.infra >= 90 && !state.bossLutado) {
+                iniciarMinigameBoss();
+                return; 
+            }
             renderGameWin();
-        } else {
-            renderDay(state.diaAtual);
+            return;
         }
+
+        state.diaAtual = proximoDia;
+        renderDay(state.diaAtual);
     }, 400); 
 }
 
@@ -294,41 +323,36 @@ function renderGameWin() {
     let tituloFinal = "";
     let descricaoFinal = "";
     let imagemFinal = "assets/happyscroller.png";
-    let musicaFinal = "ending"; // O padrão agora é a música genérica
-    let idParaDesbloquear = ""; // Variável para dizer ao sistema qual troféu liberar
-    let estiloImagem = "width: 150px;"
+    let musicaFinal = "ending"; 
+    let idParaDesbloquear = ""; 
+    let estiloImagem = "width: 150px;";
 
-    // 1. Final Secreto
     if (diretoria >= 90 && criadores >= 90 && infra >= 90) {
         tituloFinal = "FINAL SECRETO: O ALGORITMO PERFEITO";
         descricaoFinal = "Incrível! Você alcançou o equilíbrio absoluto. O Scroller tornou-se uma lenda da Governança de TI: gerou lucros astronômicos para a diretoria, manteve a comunidade de criadores extremamente engajada e opera em uma infraestrutura impecável baseada em COBIT e ITIL. Você zerou o sistema.";
         imagemFinal = "assets/true-ending-scroller.png"; 
-        musicaFinal = "trueEnding"; // Toca a música épica
-        idParaDesbloquear = "secreto"; // ID exato que está no array de conquistas
+        musicaFinal = "trueEnding"; 
+        idParaDesbloquear = "secreto"; 
         estiloImagem = "width: 220px; border-radius: 20px; box-shadow: 0px 0px 50px 10px rgba(57, 211, 83, 0.4); margin-bottom: 10px;";
     }
-    // 2. Dominância da Diretoria
     else if (diretoria > criadores && diretoria > infra) {
         tituloFinal = "FINAL: O FANTOCHE CORPORATIVO";
         descricaoFinal = "Você priorizou totalmente o lucro e o desejo dos acionistas. A diretoria está riquíssima, mas o Scroller virou um mar de anúncios e dancinhas fúteis. Os criadores originais abandonaram a plataforma e a infraestrutura roda no limite.";
         imagemFinal = "assets/neutralscroller.png";
         idParaDesbloquear = "fantoche";
     }
-    // 3. Dominância dos Criadores
     else if (criadores > diretoria && criadores > infra) {
         tituloFinal = "FINAL: A ANARQUIA DOS INFLUENCERS";
         descricaoFinal = "Os criadores amam você, a comunidade manda no aplicativo e não há censura. Contudo, a receita despencou e os acionistas estão processando a empresa. Sem dinheiro entrando, a manutenção do Scroller está com os dias contados.";
         imagemFinal = "assets/happyscroller.png";
         idParaDesbloquear = "anarquia";
     }
-    // 4. Dominância da Infraestrutura
     else if (infra > diretoria && infra > criadores) {
         tituloFinal = "FINAL: A FORTALEZA BUROCRÁTICA";
         descricaoFinal = "A infraestrutura é uma obra de arte: segura, atualizada e sem bugs. Porém, para alcançar isso, você burocratizou tanto os processos que o aplicativo perdeu a graça. Os criadores migraram e a diretoria não consegue monetizar o sistema.";
         imagemFinal = "assets/worried-scroller.png";
         idParaDesbloquear = "fortaleza";
     }
-    // 5. Final Equilibrado Padrão
     else {
         tituloFinal = "FINAL: GOVERNANÇA SUSTENTÁVEL";
         descricaoFinal = "Parabéns! Você concluiu o período de testes com sucesso. O Scroller provou que a aplicação consciente de COBIT e ITIL cria sistemas resilientes. Nenhuma frente colapsou, o negócio é sustentável e a infraestrutura é estável.";
@@ -336,7 +360,6 @@ function renderGameWin() {
         idParaDesbloquear = "governanca";
     }
 
-    // A mágica acontece aqui: desbloqueia o troféu e toca a música decidida
     unlockAchievement(idParaDesbloquear);
     tocarMusica(musicaFinal);
 
@@ -355,7 +378,6 @@ function renderGameOver() {
     statusHeader.classList.add('hidden');
     tocarMusica('gameover', false);
     
-    // Salva a conquista da Tela Azul
     unlockAchievement('tela_azul');
     
     gameContent.innerHTML = `

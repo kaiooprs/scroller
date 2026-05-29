@@ -26,7 +26,7 @@ const gameEvents = [
         descricao: "Uma nova trend global faz o tráfego do aplicativo disparar 400% em duas horas. Os servidores estão operando no limite térmico.",
         opcoes: [
             { texto: "Aumentar capacidade computacional sem planejamento financeiro", impacto: { diretoria: -15, criadores: 0, infra: +30 }, proximoDia: 4 },
-            { texto: "Aplicar políticas predefinidas de Gerenciamento de Capacidade", impacto: { diretoria: -5, criadores: -5, infra: +25 }, proximoDia: 4 },
+            { texto: "Aplicar políticas predefinidas de Gerenciamento de Capacidade", impacto: { diretoria: -5, criadores: -5, infra: +25 }, proximoDia: 4, minigame: 'throttling' },
             { texto: "Assumir o risco de indisponibilidade e não intervir", impacto: { diretoria: +15, criadores: +10, infra: -35 }, proximoDia: 4 }
         ]
     },
